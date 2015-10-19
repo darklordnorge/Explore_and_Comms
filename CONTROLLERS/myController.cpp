@@ -107,10 +107,15 @@ void MyController::step ( const vector <double> &input, vector <double> &output)
 /* -------------------------------------------------------------------------------------- */
 
 void MyController::reset ( void ){
-
     // reset the state of neurons
-
 }
-
-
 /* -------------------------------------------------------------------------------------- */
+
+void MyController::read_from_file(void) {
+}
+int MyController::get_num_input ( void ){
+    return num_input;
+}
+int MyController::get_num_output ( void ){
+    return num_output;
+}
