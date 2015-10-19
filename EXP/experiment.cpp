@@ -191,8 +191,9 @@ void EXP_Class::adv ( void ){
         update_world();
         param->world->stepSimulation( param->physics_step);
     }
-    //manage_collisions ();
+    manage_collisions ();
     //if(param->agent[0]->get_pos()[2] > 2.00) iter = param->num_iterations;
+    compute_fitness_each_step();
     iter++;
 }
 
@@ -285,11 +286,31 @@ void EXP_Class::manage_collisions (void ){
 
 // This function is what you need to design to guide the evoluation towards the solution
 void EXP_Class::compute_fitness( void ){
-    double f;
-    f = param->agent[0]->get_pos()[2];
-    //printf("\n single fitness = %f",f);
-    FINAL_FITNESS[0] += f;
+    for(int r = 0;r < param->num_agents;r++){
+        FINAL_FITNESS[0] += partial_fitness[r];
+    }
+}
 
+/*fitness = mean(leftSpeed, rightSpeed) * (1 - sqrt(abs(speedLeft) - abs(speedRight))*(1 - highest IR reading )*/
+/*fitness = (fabs(leftSpeed) + fabs(rightSpeed))/2.0 * (1.0 - sqrt(fabs( (leftSpeed - rightSpeed)/2.0 ) ) ) * (1.0 - highestIR/maxIRreading);*/
+/*2.0 and maxIRreading are the maximum values for speed and the IR readings*/
+/*MaxIRreading = 1(collision with object) min value = 0*/
+/*Velocity is normalised to be 1.0 at maximum. 0 would be full speed backwards, stand still is 0.5*/
+void EXP_Class::compute_fitness_each_step() {
+    for(int r = 0;r < param->num_agents;r++){
+        double vl = ((param->agent[r]->get_vel()[0] / param->agent[r]->get_max_vel()) + 1) * 0.5;
+        double vr = ((param->agent[r]->get_vel()[1] / param->agent[r]->get_max_vel()) + 1) * 0.5;
+        double comp_1 = ((fabs(vl) + fabs(vr)) / 2.0);
+        double comp_2 = (1.0 - sqrt(fabs((vl - vr) / 2.0)));
+        double comp_3 = 0.0;
+        for(int i = 0;i < agent_interface[r].inputs.size();i++){
+            if(comp_3 < agent_interface[r].inputs[i]){
+                comp_3 = agent_interface[r].inputs[i];
+            }
+        }
+        comp_3 = (1.0 - comp_3/1.0);
+        partial_fitness[r] += comp_1 * comp_2 * comp_3 * param->agent[r]->get_pos()[2];
+    }
 }
 
 
@@ -308,7 +329,7 @@ double EXP_Class::find_distance(const vector<double> &_pos1, const vector<double
 
 void EXP_Class::finalise_single_evaluation ( void ){
     //here you can call compute_fitness if you need to evaluate agent at the end of every evaluation
-    //compute_fitness();
+    compute_fitness();
 }
 
 /* ---------------------------------ir_readings------------------------------------------------------- */

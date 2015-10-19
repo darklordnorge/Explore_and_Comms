@@ -85,6 +85,6 @@ public:
 
     /*Added by Stefan:*/
     double partial_fitness[];
-
+    void compute_fitness_each_step(void);
 };
 #endif
