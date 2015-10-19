@@ -8,5 +8,3 @@ This program is based on the E-Puck robot platform.
 The aim of this project is to implement a variety of different neural networks and compare their performance in an
  exploration and communication task.
 
-
-
