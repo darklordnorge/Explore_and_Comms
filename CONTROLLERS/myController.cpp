@@ -1,10 +1,16 @@
 #include "myController.h"
 
+MyController::MyController(){
+  compute_genotype_length();
+}
 
+MyController::~MyController(){
+
+}
+/*this function compute the genotype length (i.e. no. of synoptic weights) */
 void MyController::compute_genotype_length ( void ){
-
-    // this function compute the genotype length (i.e. no. of synoptic weights)
-
+    genotype_length = (((num_input+1) * hidden_layer_size) +
+    ((hidden_layer_size +1 ) * num_output));
 }
 
 /* -------------------------------------------------------------------------------------- */
